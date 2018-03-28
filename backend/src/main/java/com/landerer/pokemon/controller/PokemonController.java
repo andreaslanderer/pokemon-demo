@@ -3,6 +3,7 @@ package com.landerer.pokemon.controller;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.landerer.pokemon.dto.Pokemon;
 import com.landerer.pokemon.dto.PokemonPreview;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -16,11 +17,17 @@ import java.util.stream.Collectors;
 @CrossOrigin
 public class PokemonController {
 
+    private final RestTemplate restTemplate;
+
+    @Autowired
+    public PokemonController(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
     @GetMapping
     @Cacheable("pokemonList")
     public List<PokemonPreview> getPokemon() {
-        final RestTemplate template = new RestTemplate();
-        final GetPokemonResponse response = template
+        final GetPokemonResponse response = this.restTemplate
                 .getForObject("https://pokeapi.co/api/v2/pokemon", GetPokemonResponse.class);
         return response.getResults()
                 .stream()
@@ -39,9 +46,8 @@ public class PokemonController {
     @GetMapping("/{id}")
     @Cacheable("pokemon")
     public Pokemon getPokemonForId(@PathVariable int id) {
-        final RestTemplate template = new RestTemplate();
         String url = MessageFormat.format("https://pokeapi.co/api/v2/pokemon/{0}", id);
-        final GetPokemonInfoResponse response = template.getForObject(url, GetPokemonInfoResponse.class);
+        final GetPokemonInfoResponse response = this.restTemplate.getForObject(url, GetPokemonInfoResponse.class);
         final Pokemon pokemon = new Pokemon();
         pokemon.setId(Integer.valueOf(response.getId()));
         pokemon.setType(response.getTypes().stream()

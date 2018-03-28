@@ -1,7 +1,7 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {GetPokemonService} from '../services/get-pokemon.service';
 import {Pokemon} from '../model/pokemon.model';
 import {PokemonPreview} from '../model/PokemonPreview';
+import {PokemonControllerService} from '../../services/api/pokemonController.service';
 
 @Component({
   selector: 'app-pokemon-list',
@@ -13,13 +13,13 @@ export class PokemonListComponent implements OnInit {
   public pokemonList: Pokemon[] = [];
   public displayedColumns = ['id', 'name', 'type'];
 
-  constructor(private service: GetPokemonService,
+  constructor(private service: PokemonControllerService,
               private changes: ChangeDetectorRef) {
 
   }
 
   ngOnInit() {
-    this.service.getPokemon()
+    this.service.getPokemonUsingGET()
       .subscribe((previewList: PokemonPreview[]) => {this.mapPreviewToPokemon(previewList)},
         this.handleError,
         () => { this.appendPokemon() });
@@ -38,7 +38,7 @@ export class PokemonListComponent implements OnInit {
 
   public appendPokemon() {
   this.pokemonList.forEach((pokemon: Pokemon) => {
-    this.service.getPokemonDetails(pokemon.id)
+    this.service.getPokemonForIdUsingGET(pokemon.id)
       .subscribe((newPokemon: Pokemon) => {
         pokemon.types = newPokemon.type.split(' ');
       }, this.handleError);

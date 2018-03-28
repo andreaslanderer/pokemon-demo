@@ -1,0 +1,11 @@
+<form class="register-form" (ngSubmit)="onSignup(f)" #f="ngForm" >
+  <mat-form-field class="input-full-width">
+    <input matInput placeholder="Username" name="username" ngModel="">
+  </mat-form-field>
+  <mat-form-field class="input-full-width">
+    <input matInput type="password" placeholder="Password" name="password" ngModel>
+  </mat-form-field>
+  <button type="submit" mat-raised-button color="primary">
+    Sign Up
+  </button>
+</form>
